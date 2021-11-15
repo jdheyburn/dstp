@@ -24,7 +24,7 @@ func TestGetAddr(t *testing.T) {
 	}
 	for _, tt := range tests {
 		for _, addr := range tt.addrs {
-			a, _ := getAddr(addr)
+			a, _, _ := getAddr(addr)
 			if a == "" {
 				t.Fatalf("address parsing failed for: %v", addr)
 			}

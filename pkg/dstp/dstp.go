@@ -5,19 +5,21 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/ycd/dstp/config"
-	"github.com/ycd/dstp/pkg/common"
-	"github.com/ycd/dstp/pkg/lookup"
-	"github.com/ycd/dstp/pkg/ping"
 	"math"
 	"net/http"
 	"reflect"
 	"time"
+
+	"github.com/ycd/dstp/config"
+	"github.com/ycd/dstp/pkg/common"
+	"github.com/ycd/dstp/pkg/lookup"
+	"github.com/ycd/dstp/pkg/ping"
 )
 
 type Result struct {
 	Ping      string `json:"ping"`
 	DNS       string `json:"dns"`
+	Conn      string `json:"conn"`
 	SystemDNS string `json:"system_dns"`
 	TLS       string `json:"tls"`
 	HTTPS     string `json:"https"`
@@ -45,7 +47,8 @@ func (r Result) Output(outputType string) string {
 func RunAllTests(ctx context.Context, config config.Config) error {
 	var result Result
 
-	addr, err := getAddr(config.Addr)
+	// addr, port, err := getAddr(config.Addr)
+	addr, _, err := getAddr(config.Addr)
 	if err != nil {
 		return err
 	}
@@ -61,6 +64,12 @@ func RunAllTests(ctx context.Context, config config.Config) error {
 	} else {
 		result.DNS = out.String()
 	}
+
+	// if out, err := conn.RunTest(ctx, common.Address(addr), common.Port(port)); err != nil {
+	// 	result.Conn = err.Error()
+	// } else {
+	// 	result.Conn = out.String()
+	// }
 
 	if out, err := lookup.Host(ctx, common.Address(addr)); err != nil {
 		result.SystemDNS = err.Error()

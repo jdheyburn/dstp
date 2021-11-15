@@ -7,8 +7,9 @@ import (
 	"strings"
 )
 
-func getAddr(addr string) (string, error) {
+func getAddr(addr string) (string, string, error) {
 	var pu string
+	var port string
 
 	// Cleanup the scheme first
 	//
@@ -28,16 +29,17 @@ func getAddr(addr string) (string, error) {
 		if err != nil {
 			u, err := url.ParseRequestURI(addr)
 			if err != nil {
-				host, _, err := net.SplitHostPort(addr)
+				host, p, err := net.SplitHostPort(addr)
 				if err != nil {
-					return "", fmt.Errorf("failed to split host and port")
+					return "", "", fmt.Errorf("failed to split host and port")
 				}
 
 				uu, err := url.ParseRequestURI(host)
 				if err != nil {
-					return "", fmt.Errorf("failed to parse url: %v", err.Error())
+					return "", "", fmt.Errorf("failed to parse url: %v", err.Error())
 				}
 				pu = uu.Hostname()
+				port = p
 			} else {
 				pu = u.Host
 			}
@@ -53,5 +55,5 @@ func getAddr(addr string) (string, error) {
 		pu = addr
 	}
 
-	return pu, nil
+	return pu, port, nil
 }
